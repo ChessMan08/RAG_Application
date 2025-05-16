@@ -48,25 +48,45 @@ def handle_query(query: str) -> dict:
         ans = define(term)
         return {"branch":"dictionary","snippets":[],"answer":ans,"log":f"Defined '{term}' → {ans}"}
 
-    # 3) RAG + LLM
+    # RAG–semantic-match branch
     snippets = retrieve(query, k=3)
-    context = "\n\n".join(snippets)
 
-    prompt = f"""Answer the question below using only the information in the context.  
-If the context doesn’t contain the answer, say “"I’m sorry, I don’t have enough information to answer that. Please try asking in a different way or about another topic.”
+    # We’ll pick the snippet whose “Q: …” most closely matches the user’s question text
+    best_answer = None
+    best_score = -1.0
 
-Context:
-{context}
+    # Lower-case query for matching
+    q_norm = query.lower().strip().rstrip('?')
 
-Question: {query}
-Answer:"""
+    for chunk in snippets:
+        # Split into segments at each "Q:" marker
+        for seg in chunk.split("Q:"):
+            text = seg.strip()
+            if not text or "A:" not in text:
+                continue
+            ques_part, ans_part = text.split("A:", 1)
+            # Normalize the question part
+            ques_norm = ques_part.lower().strip().rstrip('?')
+            # Simple substring match; you can enhance this to fuzzy matching
+            if q_norm in ques_norm:
+                # Found the matching Q/A pair
+                best_answer = ans_part.split("Q:",1)[0].strip()
+                best_score = 1.0
+                break
+        if best_answer:
+            break
 
-    gen = get_generator()
-    out = gen(prompt, max_length=200, do_sample=False)[0]["generated_text"].strip()
+    # Fallback: if no snippet matched, fall back to the very first chunk’s answer
+    if not best_answer:
+        first = snippets[0]
+        if "A:" in first:
+            best_answer = first.split("A:",1)[1].split("Q:",1)[0].strip()
+        else:
+            best_answer = first.strip()
 
     return {
-        "branch":"rag",
-        "snippets": snippets,
-        "answer": out,
-        "log": f"RAG+FlanT5 generated answer"
+        "branch": "rag",
+        "snippets": [chunk] if best_answer else [],
+        "answer": best_answer,
+        "log": f"RAG semantic-matched snippet → score={best_score}"
     }
