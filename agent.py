@@ -48,45 +48,46 @@ def handle_query(query: str) -> dict:
         ans = define(term)
         return {"branch":"dictionary","snippets":[],"answer":ans,"log":f"Defined '{term}' → {ans}"}
 
-    # RAG–semantic-match branch
-    snippets = retrieve(query, k=3)
+	# RAG–semantic-match branch
+	snippets = retrieve(query, k=3)
 
-    # We’ll pick the snippet whose “Q: …” most closely matches the user’s question text
-    best_answer = None
-    best_score = -1.0
+	best_answer = None
+	best_snippet = None
+	best_score = -1.0
 
-    # Lower-case query for matching
-    q_norm = query.lower().strip().rstrip('?')
+	# Normalize once
+	q_norm = query.lower().strip().rstrip('?')
 
-    for chunk in snippets:
-        # Split into segments at each "Q:" marker
-        for seg in chunk.split("Q:"):
-            text = seg.strip()
-            if not text or "A:" not in text:
-                continue
-            ques_part, ans_part = text.split("A:", 1)
-            # Normalize the question part
-            ques_norm = ques_part.lower().strip().rstrip('?')
-            # Simple substring match; you can enhance this to fuzzy matching
-            if q_norm in ques_norm:
-                # Found the matching Q/A pair
-                best_answer = ans_part.split("Q:",1)[0].strip()
-                best_score = 1.0
-                break
-        if best_answer:
-            break
+	for chunk in snippets:
+		# Split into segments for each "Q:"
+		for seg in chunk.split("Q:"):
+			text = seg.strip()
+			if not text or "A:" not in text:
+				continue
+			ques_part, ans_part = text.split("A:", 1)
+			ques_norm = ques_part.lower().strip().rstrip('?')
+			# If this segment’s question text contains the user query
+			if q_norm in ques_norm:
+				best_answer = ans_part.split("Q:", 1)[0].strip()
+				best_snippet = chunk            # capture the entire chunk
+				best_score = 1.0
+				break
+		if best_answer:
+			break
 
-    # Fallback: if no snippet matched, fall back to the very first chunk’s answer
-    if not best_answer:
-        first = snippets[0]
-        if "A:" in first:
-            best_answer = first.split("A:",1)[1].split("Q:",1)[0].strip()
-        else:
-            best_answer = first.strip()
+	# Fallback if nothing matched
+	if not best_answer:
+		first = snippets[0]
+		if "A:" in first:
+			best_answer = first.split("A:", 1)[1].split("Q:", 1)[0].strip()
+		else:
+			best_answer = first.strip()
+		best_snippet = first
 
-    return {
-        "branch": "rag",
-        "snippets": [chunk] if best_answer else [],
-        "answer": best_answer,
-        "log": f"RAG semantic-matched snippet → score={best_score}"
-    }
+	return {
+		"branch": "rag",
+		"snippets": [best_snippet],   # return only the matched snippet
+		"answer": best_answer,
+		"log": f"RAG semantic-matched snippet (score={best_score})"
+	}
+
