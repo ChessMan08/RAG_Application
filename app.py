@@ -10,9 +10,9 @@ st.set_page_config(
 st.title("RAG‑Powered Multi‑Agent Q&A")
 
 # Ensure FAISS index exists
-#from ingestion import build_faiss_index, INDEX_FILE, CHUNKS_FILE
+from ingestion import build_faiss_index, INDEX_FILE, CHUNKS_FILE
 #if not (os.path.exists(INDEX_FILE) and os.path.exists(CHUNKS_FILE)):
-#        build_faiss_index()
+        #build_faiss_index(all_chunks)
 
 # — 1. File uploader
 from langchain.document_loaders import UnstructuredPDFLoader, Docx2txtLoader
