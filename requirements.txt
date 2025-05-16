@@ -4,4 +4,6 @@ sentence-transformers
 transformers
 torch
 nltk
-langchain
+langchain>=0.0.200
+langchain-community
+langchain-experimental  
