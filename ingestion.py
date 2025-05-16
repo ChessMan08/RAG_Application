@@ -13,18 +13,12 @@ EMBED_MODEL = "all-MiniLM-L6-v2"
 INDEX_FILE = "faiss_index.bin"
 CHUNKS_FILE = "chunks.pkl"
 
-def build_faiss_index(docs_path: str = "docs/"):
-    # Load .txt files
-    files = glob.glob(os.path.join(docs_path, "*.txt"))
-    if not files:
-        raise FileNotFoundError(f"No .txt files in {docs_path}")
-    texts = [open(f, encoding='utf-8').read() for f in files]
-
-    # Chunk texts
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    chunks = []
-    for t in texts:
-        chunks.extend(splitter.split_text(t))
+def build_faiss_index(chunks: list[str]):
+    """
+    Build and save a FAISS index over the provided text chunks.
+    """
+    if not chunks:
+        raise ValueError("No document chunks provided for indexing.")
 
     # Embed
     embedder = SentenceTransformer(EMBED_MODEL)
