@@ -6,7 +6,7 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded"
 )
-st.title("RAG‑Powered Multi‑Agent Q&A")
+st.title("RAG‑Powered Chatbot")
 
 # Ensure FAISS index exists
 from ingestion import build_faiss_index, INDEX_FILE, CHUNKS_FILE
