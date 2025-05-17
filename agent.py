@@ -1,5 +1,5 @@
 # agent.py
-
+import re
 from retrieval import retrieve
 from tools.calculator import calculate
 from tools.dictionary import define
