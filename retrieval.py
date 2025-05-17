@@ -6,7 +6,7 @@ from ingestion import build_faiss_index, INDEX_FILE, CHUNKS_FILE
 
 # Ensure index exists
 if not os.path.exists(INDEX_FILE) or not os.path.exists(CHUNKS_FILE):
-    build_faiss_index(all chunks)
+    build_faiss_index(all_chunks)
 
 # Load
 index = faiss.read_index(INDEX_FILE)
