@@ -2,7 +2,7 @@ import os
 import streamlit as st
 # Page config
 st.set_page_config(
-    page_title="RAG‑Powered Multi‑Agent Q&A",
+    page_title="RAG‑Powered Chatbot",
     layout="centered",
     initial_sidebar_state="expanded"
 )
