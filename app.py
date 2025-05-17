@@ -1,6 +1,7 @@
 import os
 import streamlit as st
-
+import importlib
+import retrieval
 # Page config
 st.set_page_config(
     page_title="RAG‑Powered Multi‑Agent Q&A",
@@ -12,7 +13,7 @@ st.title("RAG‑Powered Multi‑Agent Q&A")
 # Ensure FAISS index exists
 from ingestion import build_faiss_index, INDEX_FILE, CHUNKS_FILE
 #if not (os.path.exists(INDEX_FILE) and os.path.exists(CHUNKS_FILE)):
-        #build_faiss_index(all_chunks)
+    #build_faiss_index(all_chunks)
 
 # — 1. File uploader
 from langchain.document_loaders import UnstructuredPDFLoader, Docx2txtLoader
@@ -44,7 +45,7 @@ for file in uploaded:
 
 # — 3. Build FAISS index on the uploaded chunks
 build_faiss_index(all_chunks)
-
+importlib.reload(retrieval)
 # Import the agent
 from agent import handle_query
 
