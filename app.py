@@ -1,7 +1,5 @@
 import os
 import streamlit as st
-import importlib
-import retrieval
 # Page config
 st.set_page_config(
     page_title="RAG‑Powered Multi‑Agent Q&A",
@@ -45,7 +43,10 @@ for file in uploaded:
 
 # — 3. Build FAISS index on the uploaded chunks
 build_faiss_index(all_chunks)
+
+import importlib, retrieval
 importlib.reload(retrieval)
+from retrieval import retrieve
 # Import the agent
 from agent import handle_query
 
