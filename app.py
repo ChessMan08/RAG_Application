@@ -68,7 +68,7 @@ if submitted and batch.strip():
     questions = [q.strip() for q in batch.splitlines() if q.strip()]
     for q in questions:
         res = handle_query(q)
-        st.session_state.logs.append(f"Q: {q} | {res['log']}")
+        st.session_state.logs.append(f"Q: {q}")
         st.session_state.history.append({
             "q": q,
             "branch": res["branch"],
@@ -80,13 +80,13 @@ if submitted and batch.strip():
 # Display all results
 if st.session_state.history:
     st.markdown("---")
-    st.header("Batch Results")
+    st.header("Response")
     for entry in st.session_state.history:
         st.subheader(f"Q: {entry['q']}")
-        st.write("**Branch:**", entry["branch"].upper())
-        if entry["branch"] == "rag" and entry["snippets"]:
-            st.write("**Source Snippet:**")
-            st.markdown(f"> {entry['snippets'][0]}")
+        #st.write("**Branch:**", entry["branch"].upper())
+        #if entry["branch"] == "rag" and entry["snippets"]:
+            #st.write("**Source Snippet:**")
+            #st.markdown(f"> {entry['snippets'][0]}")
         st.write("**Answer:**", entry["answer"])
         st.markdown("---")
 
