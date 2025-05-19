@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 INDEX_FILE = "faiss_index.bin"
 CHUNKS_FILE = "chunks.pkl"
 
-# Load index & chunks (no automatic build here!)
+# Load index & chunks
 if not os.path.exists(INDEX_FILE) or not os.path.exists(CHUNKS_FILE):
     raise FileNotFoundError(
         "Index files missing—run ingestion or upload flow first."
