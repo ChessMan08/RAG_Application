@@ -10,10 +10,9 @@ st.title("RAG‑Powered Chatbot")
 
 # Ensure FAISS index exists
 from ingestion import build_faiss_index, INDEX_FILE, CHUNKS_FILE
-#if not (os.path.exists(INDEX_FILE) and os.path.exists(CHUNKS_FILE)):
-    #build_faiss_index(all_chunks)
 
-# — 1. File uploader
+
+# File uploader
 from langchain.document_loaders import UnstructuredPDFLoader, Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
@@ -27,7 +26,7 @@ if not uploaded:
     st.warning("Please upload at least one document to continue.")
     st.stop()
 
-# — 2. Parse & chunk uploaded docs
+# Parse & chunk uploaded docs
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 all_chunks = []
 for file in uploaded:
@@ -41,7 +40,7 @@ for file in uploaded:
     for d in docs:
         all_chunks.extend(splitter.split_text(d.page_content))
 
-# — 3. Build FAISS index on the uploaded chunks
+# Build FAISS index on the uploaded chunks
 build_faiss_index(all_chunks)
 
 import importlib, retrieval
@@ -77,20 +76,16 @@ if submitted and batch.strip():
         })
 
 
-# Display all results
+# Display results
 if st.session_state.history:
     st.markdown("---")
     st.header("Response")
     for entry in st.session_state.history:
         st.subheader(f"Q: {entry['q']}")
-        #st.write("**Branch:**", entry["branch"].upper())
-        #if entry["branch"] == "rag" and entry["snippets"]:
-            #st.write("**Source Snippet:**")
-            #st.markdown(f"> {entry['snippets'][0]}")
         st.write("**Answer:**", entry["answer"])
         st.markdown("---")
 
-# Sidebar: full agent log
+# Sidebar
 with st.sidebar:
     st.header("Agent Log")
     for line in st.session_state.logs:
