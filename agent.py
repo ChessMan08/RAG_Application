@@ -1,4 +1,3 @@
-# agent.py
 import re
 from retrieval import retrieve
 from tools.calculator import calculate
@@ -15,7 +14,7 @@ def handle_query(query: str) -> dict:
     """
     q = query.lower().strip().rstrip("?")
 
-    # 1) Calculator branch
+    # Calculator branch
     if "calculate" in q:
         expr = q.replace("calculate", "").strip()
         ans = calculate(expr)
@@ -26,7 +25,7 @@ def handle_query(query: str) -> dict:
             "log": f"Calculated '{expr}' → {ans}"
         }
 
-    # 2) Dictionary branch
+    # Dictionary branch
     if "define" in q:
         term = q.replace("define", "").strip()
         ans = define(term)
@@ -37,7 +36,6 @@ def handle_query(query: str) -> dict:
             "log": f"Defined '{term}' → {ans}"
         }
 
-    # 3) RAG–semantic-match branch
     # retrieve top-3 chunks
     snippets = retrieve(query, k=3)
 
@@ -49,14 +47,12 @@ def handle_query(query: str) -> dict:
     query_words = set(re.findall(r"\w+", q))
 
     for chunk in snippets:
-        # find all “Q:…A:” pairs in this chunk
         for seg in chunk.split("Q:"):
             if "A:" not in seg:
                 continue
             ques_part, ans_part = seg.split("A:", 1)
             # tokenize question part
             words = set(re.findall(r"\w+", ques_part.lower()))
-            # compute Jaccard overlap
             if not words: 
                 continue
             score = len(query_words & words) / len(query_words | words)
