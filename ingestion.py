@@ -6,7 +6,7 @@ import faiss
 from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# Download WordNet once
+# Download WordNet
 nltk.download('wordnet')
 
 EMBED_MODEL = "all-MiniLM-L6-v2"
